@@ -1,43 +1,48 @@
 package hr.tvz.java.vjezbe.entitet;
 
+import hr.tvz.java.vjezbe.iznimke.NeisplativoObjavljivanjeException;
+
 import java.math.BigDecimal;
 
-public abstract class Publikacija implements ZaProdaju {
+public class Casopis extends Publikacija {
 	
-	private String nazivPublikacije;
-	private int godinaIzdanja;
-	private int brojStranicaPublikacije;
-	private String vrstaPublikacije;
-	private BigDecimal cijena;
-	public static final String VRSTA_PUBLIKACIJE_ELEKTRONICKA = "VRSTA_PUBLIKACIJE_ELEKTRONICKA";
-	public static final String VRSTA_PUBLIKACIJE_PAPIRNATA = "VRSTA_PUBLIKACIJE_PAPIRNATA";
+	private int mjesecIzdavanja;
+	public static final BigDecimal CIJENA_PO_PRIMJERKU = new BigDecimal(10.0);
 	
-	public Publikacija(String nazivPublikacije, int godinaIzdanja, int brojStranicaPublikacije, String vrstaPublikacije, BigDecimal cijenaPoStranici) {
-		this.nazivPublikacije = nazivPublikacije;
-		this.godinaIzdanja = godinaIzdanja;
-		this.brojStranicaPublikacije = brojStranicaPublikacije;
-		this.vrstaPublikacije = vrstaPublikacije;
-		cijena = izracunCijene(brojStranicaPublikacije, vrstaPublikacije, cijenaPoStranici);
-	}
-	
-	public String getNazivPublikacije() {
-		return nazivPublikacije;
-	}
-	
-	public int getGodinaIzdanja() {
-		return godinaIzdanja;
+	public Casopis(String nazivKnjige, int godinaIzdanja, int brojStranicaPublikacije, String vrstaPublikacije, int mjesecIzdavanja)
+			throws NeisplativoObjavljivanjeException {
+		
+		super(nazivKnjige, godinaIzdanja, brojStranicaPublikacije, vrstaPublikacije, new BigDecimal(0.6));
+		this.mjesecIzdavanja = mjesecIzdavanja;
+		if(this.getCijena().compareTo(new BigDecimal(1.0)) == 0 || this.getCijena().compareTo(new BigDecimal(1.0)) == -1) {
+			throw new NeisplativoObjavljivanjeException("Neisplativo objavljivanje časopisa!");
+		}
 	}
 
-	public int getBrojStranicaPublikacije() {
-		return brojStranicaPublikacije;
-	}
-	
-	public String getVrstaPublikacije() {
-		return vrstaPublikacije;
+	public int getMjesecIzdavanja() {
+		return mjesecIzdavanja;
 	}
 
-	public BigDecimal getCijena() {
-		return cijena;
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + mjesecIzdavanja;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (!(obj instanceof Casopis))
+			return false;
+		Casopis other = (Casopis) obj;
+		if (mjesecIzdavanja != other.mjesecIzdavanja)
+			return false;
+		return true;
 	}
 	
 }
