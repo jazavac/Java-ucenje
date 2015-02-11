@@ -1,33 +1,54 @@
 package hr.tvz.java.vjezbe.entitet;
 
-import hr.tvz.java.vjezbe.iznimke.NeisplativoObjavljivanjeException;
-
 import java.math.BigDecimal;
 
-public class Casopis extends Publikacija {
+public abstract class Publikacija implements ZaProdaju {
 	
-	private int mjesecIzdavanja;
-	public static final BigDecimal CIJENA_PO_PRIMJERKU = new BigDecimal(10.0);
+	private String nazivPublikacije;
+	private int godinaIzdanja;
+	private int brojStranicaPublikacije;
+	private String vrstaPublikacije;
+	private BigDecimal cijena;
+	public static final String VRSTA_PUBLIKACIJE_ELEKTRONICKA = "VRSTA_PUBLIKACIJE_ELEKTRONICKA";
+	public static final String VRSTA_PUBLIKACIJE_PAPIRNATA = "VRSTA_PUBLIKACIJE_PAPIRNATA";
 	
-	public Casopis(String nazivKnjige, int godinaIzdanja, int brojStranicaPublikacije, String vrstaPublikacije, int mjesecIzdavanja)
-			throws NeisplativoObjavljivanjeException {
-		
-		super(nazivKnjige, godinaIzdanja, brojStranicaPublikacije, vrstaPublikacije, new BigDecimal(0.6));
-		this.mjesecIzdavanja = mjesecIzdavanja;
-		if(this.getCijena().compareTo(new BigDecimal(1.0)) == 0 || this.getCijena().compareTo(new BigDecimal(1.0)) == -1) {
-			throw new NeisplativoObjavljivanjeException("Neisplativo objavljivanje časopisa!");
-		}
+	public Publikacija(String nazivPublikacije, int godinaIzdanja, int brojStranicaPublikacije, String vrstaPublikacije, BigDecimal cijenaPoStranici) {
+		this.nazivPublikacije = nazivPublikacije;
+		this.godinaIzdanja = godinaIzdanja;
+		this.brojStranicaPublikacije = brojStranicaPublikacije;
+		this.vrstaPublikacije = vrstaPublikacije;
+		cijena = izracunCijene(brojStranicaPublikacije, vrstaPublikacije, cijenaPoStranici);
+	}
+	
+	public String getNazivPublikacije() {
+		return nazivPublikacije;
+	}
+	
+	public int getGodinaIzdanja() {
+		return godinaIzdanja;
 	}
 
-	public int getMjesecIzdavanja() {
-		return mjesecIzdavanja;
+	public int getBrojStranicaPublikacije() {
+		return brojStranicaPublikacije;
+	}
+	
+	public String getVrstaPublikacije() {
+		return vrstaPublikacije;
+	}
+
+	public BigDecimal getCijena() {
+		return cijena;
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + mjesecIzdavanja;
+		int result = 1;
+		result = prime * result + brojStranicaPublikacije;
+		result = prime * result + ((cijena == null) ? 0 : cijena.hashCode());
+		result = prime * result + godinaIzdanja;
+		result = prime * result + ((nazivPublikacije == null) ? 0 : nazivPublikacije.hashCode());
+		result = prime * result + ((vrstaPublikacije == null) ? 0 : vrstaPublikacije.hashCode());
 		return result;
 	}
 
@@ -35,12 +56,29 @@ public class Casopis extends Publikacija {
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (!super.equals(obj))
+		if (obj == null)
 			return false;
-		if (!(obj instanceof Casopis))
+		if (!(obj instanceof Publikacija))
 			return false;
-		Casopis other = (Casopis) obj;
-		if (mjesecIzdavanja != other.mjesecIzdavanja)
+		Publikacija other = (Publikacija) obj;
+		if (brojStranicaPublikacije != other.brojStranicaPublikacije)
+			return false;
+		if (cijena == null) {
+			if (other.cijena != null)
+				return false;
+		} else if (!cijena.equals(other.cijena))
+			return false;
+		if (godinaIzdanja != other.godinaIzdanja)
+			return false;
+		if (nazivPublikacije == null) {
+			if (other.nazivPublikacije != null)
+				return false;
+		} else if (!nazivPublikacije.equals(other.nazivPublikacije))
+			return false;
+		if (vrstaPublikacije == null) {
+			if (other.vrstaPublikacije != null)
+				return false;
+		} else if (!vrstaPublikacije.equals(other.vrstaPublikacije))
 			return false;
 		return true;
 	}
