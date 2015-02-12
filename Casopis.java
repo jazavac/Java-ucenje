@@ -1,5 +1,6 @@
 package hr.tvz.java.vjezbe.entitet;
 
+import hr.tvz.java.vjezbe.enumeracija.VrstaPublikacije;
 import hr.tvz.java.vjezbe.iznimke.NeisplativoObjavljivanjeException;
 
 import java.math.BigDecimal;
@@ -9,7 +10,7 @@ public class Casopis extends Publikacija {
 	private int mjesecIzdavanja;
 	public static final BigDecimal CIJENA_PO_PRIMJERKU = new BigDecimal(10.0);
 	
-	public Casopis(String nazivKnjige, int godinaIzdanja, int brojStranicaPublikacije, String vrstaPublikacije, int mjesecIzdavanja)
+	public Casopis(String nazivKnjige, int godinaIzdanja, int brojStranicaPublikacije, VrstaPublikacije vrstaPublikacije, int mjesecIzdavanja)
 			throws NeisplativoObjavljivanjeException {
 		
 		super(nazivKnjige, godinaIzdanja, brojStranicaPublikacije, vrstaPublikacije, new BigDecimal(0.6));
