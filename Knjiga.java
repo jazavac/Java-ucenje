@@ -1,18 +1,20 @@
 package hr.tvz.java.vjezbe.entitet;
 
+import hr.tvz.java.vjezbe.enumeracija.Jezik;
+import hr.tvz.java.vjezbe.enumeracija.VrstaPublikacije;
 import hr.tvz.java.vjezbe.iznimke.NeisplativoObjavljivanjeException;
 
 import java.math.BigDecimal;
 
 public class Knjiga extends Publikacija implements ZaPosudbu {
 	
-	private String jezikKnjige;
+	private Jezik jezikKnjige;
 	private Izdavac izdavac;
 	private boolean knjigaRaspoloziva = true;
 	public static final BigDecimal CIJENA_PO_STRANICI_HR = new BigDecimal(0.5);
 	public static final BigDecimal CIJENA_PO_STRANICI_STRANO = new BigDecimal(0.7);
 	
-	public Knjiga(String nazivKnjige, String jezikKnjige, int godinaIzdanja, int brojStranicaPublikacije, String vrstaPublikacije, Izdavac izdavac,
+	public Knjiga(String nazivKnjige, Jezik jezikKnjige, int godinaIzdanja, int brojStranicaPublikacije, VrstaPublikacije vrstaPublikacije, Izdavac izdavac,
 			BigDecimal cijenaPoStranici) throws NeisplativoObjavljivanjeException {
 		
 		super(nazivKnjige, godinaIzdanja, brojStranicaPublikacije, vrstaPublikacije, cijenaPoStranici);
@@ -23,7 +25,7 @@ public class Knjiga extends Publikacija implements ZaPosudbu {
 		}
 	}
 
-	public String getJezikKnjige() {
+	public Jezik getJezikKnjige() {
 		return jezikKnjige;
 	}
 
@@ -52,8 +54,7 @@ public class Knjiga extends Publikacija implements ZaPosudbu {
 		final int prime = 31;
 		int result = super.hashCode();
 		result = prime * result + ((izdavac == null) ? 0 : izdavac.hashCode());
-		result = prime * result
-				+ ((jezikKnjige == null) ? 0 : jezikKnjige.hashCode());
+		result = prime * result	+ ((jezikKnjige == null) ? 0 : jezikKnjige.hashCode());
 		result = prime * result + (knjigaRaspoloziva ? 1231 : 1237);
 		return result;
 	}
@@ -72,14 +73,13 @@ public class Knjiga extends Publikacija implements ZaPosudbu {
 				return false;
 		} else if (!izdavac.equals(other.izdavac))
 			return false;
-		if (jezikKnjige == null) {
-			if (other.jezikKnjige != null)
-				return false;
-		} else if (!jezikKnjige.equals(other.jezikKnjige))
+		if (jezikKnjige != other.jezikKnjige)
 			return false;
 		if (knjigaRaspoloziva != other.knjigaRaspoloziva)
 			return false;
 		return true;
 	}
+
+	
 
 }
