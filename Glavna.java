@@ -2,8 +2,10 @@ package hr.tvz.java.vjezbe.glavna;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 import hr.tvz.java.vjezbe.entitet.Casopis;
 import hr.tvz.java.vjezbe.entitet.Clan;
@@ -11,40 +13,50 @@ import hr.tvz.java.vjezbe.entitet.Izdavac;
 import hr.tvz.java.vjezbe.entitet.Knjiga;
 import hr.tvz.java.vjezbe.entitet.Posudba;
 import hr.tvz.java.vjezbe.entitet.Publikacija;
+import hr.tvz.java.vjezbe.enumeracija.Jezik;
+import hr.tvz.java.vjezbe.enumeracija.VrstaPublikacije;
 import hr.tvz.java.vjezbe.iznimke.DuplikatPublikacijeException;
 import hr.tvz.java.vjezbe.iznimke.NeisplativoObjavljivanjeException;
 
 public class Glavna {
 	
 	private static Knjiga unosKnjige(Scanner ulaz) throws NeisplativoObjavljivanjeException, DuplikatPublikacijeException {
-		String tmpNazivKnjige, tmpJezikKnjige;
-		int tmpGodinaIzdanja, tmpBrojStranica, tmpVrsta;
-				
+		String tmpNazivKnjige;
+		int tmpJezikKnjige, tmpGodinaIzdanja, tmpBrojStranica, tmpVrsta;
+
 		System.out.println("Unesite naziv knjige:");
 		tmpNazivKnjige = ulaz.nextLine();
-		System.out.println("Unesite jezik knjige:");
-		tmpJezikKnjige = ulaz.nextLine();
-		char c = tmpJezikKnjige.charAt(0);
+		do {
+			System.out.println("Unesite jezik knjige:");
+			for(Jezik jezik : Jezik.values()) {
+				System.out.println(jezik.getKod() + ") " + jezik.getOpis());
+			}
+			tmpJezikKnjige = ulaz.nextInt();
+			ulaz.nextLine();
+		}while(tmpJezikKnjige>Jezik.values().length || tmpJezikKnjige<1);
+		Jezik tmpJezik = Jezik.values()[tmpJezikKnjige-1];
 		System.out.println("Unesite godinu knjige:");
 		tmpGodinaIzdanja = ulaz.nextInt();
 		System.out.println("Unesite broj stranica knjige:");
 		tmpBrojStranica = ulaz.nextInt();
-		System.out.println("Unesite vrstu:");
-		System.out.println("1. Elektronička publikacija");
-		System.out.println("2. Papirnata publikacija");
-		tmpVrsta = ulaz.nextInt();
-		ulaz.nextLine();
+		do {
+			System.out.println("Unesite vrstu:");
+			System.out.println("1. Elektronička publikacija");
+			System.out.println("2. Papirnata publikacija");
+			tmpVrsta = ulaz.nextInt();
+			ulaz.nextLine();
+		}while(tmpVrsta != 1 && tmpVrsta != 2);
 		
 		Izdavac izdavac = unosIzdavaca(ulaz);
 		Knjiga tmp = null;
-		if(tmpVrsta == 1 && (c == 'h' || c == 'H')) {
-			tmp = new Knjiga(tmpNazivKnjige, tmpJezikKnjige, tmpGodinaIzdanja, tmpBrojStranica, Publikacija.VRSTA_PUBLIKACIJE_ELEKTRONICKA, izdavac, Knjiga.CIJENA_PO_STRANICI_HR);
-		} else if(tmpVrsta == 1 && (c != 'h' || c != 'H')) {
-			tmp = new Knjiga(tmpNazivKnjige, tmpJezikKnjige, tmpGodinaIzdanja, tmpBrojStranica, Publikacija.VRSTA_PUBLIKACIJE_ELEKTRONICKA, izdavac, Knjiga.CIJENA_PO_STRANICI_STRANO);
-		} else if(tmpVrsta == 2 && (c == 'h' || c == 'H')) {
-			tmp = new Knjiga(tmpNazivKnjige, tmpJezikKnjige, tmpGodinaIzdanja, tmpBrojStranica, Publikacija.VRSTA_PUBLIKACIJE_PAPIRNATA, izdavac, Knjiga.CIJENA_PO_STRANICI_HR);
+		if(tmpVrsta == 1 && tmpJezikKnjige == 1) {
+			tmp = new Knjiga(tmpNazivKnjige, tmpJezik, tmpGodinaIzdanja, tmpBrojStranica, VrstaPublikacije.ELEKTRONICKA, izdavac, Knjiga.CIJENA_PO_STRANICI_HR);
+		} else if(tmpVrsta == 1 && tmpJezikKnjige != 1) {
+			tmp = new Knjiga(tmpNazivKnjige, tmpJezik, tmpGodinaIzdanja, tmpBrojStranica, VrstaPublikacije.ELEKTRONICKA, izdavac, Knjiga.CIJENA_PO_STRANICI_STRANO);
+		} else if(tmpVrsta == 2 && tmpJezikKnjige == 1) {
+			tmp = new Knjiga(tmpNazivKnjige, tmpJezik, tmpGodinaIzdanja, tmpBrojStranica, VrstaPublikacije.PAPIRNATA, izdavac, Knjiga.CIJENA_PO_STRANICI_HR);
 		} else {
-			tmp = new Knjiga(tmpNazivKnjige, tmpJezikKnjige, tmpGodinaIzdanja, tmpBrojStranica, Publikacija.VRSTA_PUBLIKACIJE_PAPIRNATA, izdavac, Knjiga.CIJENA_PO_STRANICI_STRANO);
+			tmp = new Knjiga(tmpNazivKnjige, tmpJezik, tmpGodinaIzdanja, tmpBrojStranica, VrstaPublikacije.PAPIRNATA, izdavac, Knjiga.CIJENA_PO_STRANICI_STRANO);
 		}
 		return tmp;
 		
@@ -73,18 +85,20 @@ public class Glavna {
 		tmpBrojStranica = ulaz.nextInt();
 		System.out.println("Unesite mjesec časopisa:");
 		tmpMjesec = ulaz.nextInt();
-		System.out.println("Unesite vrstu:");
-		System.out.println("1. Elektronička publikacija");
-		System.out.println("2. Papirnata publikacija");
-		tmpVrsta = ulaz.nextInt();
-		ulaz.nextLine();
+		do {
+			System.out.println("Unesite vrstu:");
+			System.out.println("1. Elektronička publikacija");
+			System.out.println("2. Papirnata publikacija");
+			tmpVrsta = ulaz.nextInt();
+			ulaz.nextLine();
+		}while(tmpVrsta != 1 && tmpVrsta != 2);
 		
 		Casopis tmp;
 		
 		if(tmpVrsta == 1) {
-			tmp = new Casopis(tmpNazivCasopisa, tmpGodinaCasopisa, tmpBrojStranica, Publikacija.VRSTA_PUBLIKACIJE_ELEKTRONICKA, tmpMjesec);
+			tmp = new Casopis(tmpNazivCasopisa, tmpGodinaCasopisa, tmpBrojStranica, VrstaPublikacije.ELEKTRONICKA, tmpMjesec);
 		} else {
-			tmp = new Casopis(tmpNazivCasopisa, tmpGodinaCasopisa, tmpBrojStranica, Publikacija.VRSTA_PUBLIKACIJE_PAPIRNATA, tmpMjesec);
+			tmp = new Casopis(tmpNazivCasopisa, tmpGodinaCasopisa, tmpBrojStranica, VrstaPublikacije.PAPIRNATA, tmpMjesec);
 		}
 		return tmp;
 		
@@ -102,17 +116,19 @@ public class Glavna {
 		return new Clan(tmpIme, tmpPrezime, tmpOibOsobe);
 		
 	}
-
+	
 	public static void main(String[] args) throws NeisplativoObjavljivanjeException, DuplikatPublikacijeException {
 		
 		Scanner ulaz = new Scanner(System.in);
-		Publikacija[] publikacije = new Publikacija[4];
+		List<Publikacija> publikacija = new ArrayList<>();
+		Publikacija publikacije;
 		Clan clan = null;
 		boolean nastavi = true;
 		while(nastavi) {
 			System.out.println("Unos 1. knjige:");
 			try {
-				publikacije[0] = unosKnjige(ulaz);
+				publikacije = unosKnjige(ulaz);
+				publikacija.add(publikacije);
 				nastavi = false;
 			} catch (NeisplativoObjavljivanjeException noe) {
 				nastavi = true;
@@ -127,8 +143,9 @@ public class Glavna {
 		while(nastavi) {
 			System.out.println("Unos 2. knjige:");
 			try {
-				publikacije[1] = unosKnjige(ulaz);
-				if(publikacije[0].equals(publikacije[1])) {
+				publikacije = unosKnjige(ulaz);
+				publikacija.add(publikacije);
+				if(publikacija.get(0).equals(publikacija.get(1))) {
 					throw new DuplikatPublikacijeException("Duplikat knjige!");
 				}
 				nastavi = false;
@@ -145,7 +162,8 @@ public class Glavna {
 		while(nastavi) {
 			System.out.println("Unos 1. časopisa:");
 			try {
-				publikacije[2] = unosCasopisa(ulaz);
+				publikacije = unosCasopisa(ulaz);
+				publikacija.add(publikacije);
 				nastavi = false;
 			} catch (NeisplativoObjavljivanjeException noe) {
 				nastavi = true;
@@ -160,8 +178,9 @@ public class Glavna {
 		while(nastavi) {
 			System.out.println("Unos 2. časopisa:");
 			try {
-				publikacije[3] = unosCasopisa(ulaz);
-				if(publikacije[0].equals(publikacije[1])) {
+				publikacije = unosCasopisa(ulaz);
+				publikacija.add(publikacije);
+				if(publikacija.get(2).equals(publikacija.get(3))) {
 					throw new DuplikatPublikacijeException("Duplikat časopisa!");
 				}
 				nastavi = false;
@@ -173,10 +192,11 @@ public class Glavna {
 				System.out.println(dpe.getMessage());
 			}
 		}
-				
-		Arrays.sort(publikacije, (Publikacija p1, Publikacija p2) -> (p1.getCijena().compareTo(p2.getCijena())));
-		Publikacija najveca = publikacije[3];
-		Publikacija najmanja = publikacije[0];
+		
+		publikacija.sort((p1, p2) -> p1.getCijena().compareTo(p2.getCijena()));
+		
+		Publikacija najveca = publikacija.get(3);
+		Publikacija najmanja = publikacija.get(0);
 		
 		if(najveca instanceof Knjiga) {
 			System.out.println("Najskuplja publikacija:");
@@ -230,47 +250,62 @@ public class Glavna {
 		clan = unosClana(ulaz);
 		
 		System.out.println("Odaberite publikaciju:");
-		int n = publikacije.length;
-		for(int i=0; i<n; i++) {
-			System.out.println((i+1) + ") " + publikacije[i].getNazivPublikacije());
-		}
+		String naziv = ulaz.nextLine();
 		
-		int odabir = ulaz.nextInt();
-		ulaz.nextLine();
-		while(odabir != 1 && odabir != 2 && odabir != 3 && odabir != 4) {
-			odabir = ulaz.nextInt();
-			ulaz.nextLine();
-		}
-		odabir -= 1;
+		Publikacija odabrana = publikacija.stream().filter(p -> p.getNazivPublikacije().equals(naziv)).findFirst().get();
 		
-		Posudba posudba = new Posudba(clan, publikacije[odabir], LocalDateTime.now());
+		Posudba posudba = new Posudba(clan, odabrana, LocalDateTime.now());
 		
-				
 		System.out.println("Stanje posudbe:");
-		System.out.println("Naziv publikacije: " + publikacije[odabir].getNazivPublikacije());
-		System.out.println("Vrsta: " + publikacije[odabir].getVrstaPublikacije());
-		System.out.println("Broj stranica: " + publikacije[odabir].getBrojStranicaPublikacije());
-		System.out.println("Cijena: " + publikacije[odabir].getCijena());
-		if(publikacije[odabir] instanceof Knjiga) {
-			System.out.println("Jezik: " + ((Knjiga) publikacije[odabir]).getJezikKnjige());
-			System.out.println("Izdavač:" + ((Knjiga) publikacije[odabir]).getIzdavac().getNazivIzdavaca());
-			System.out.println("Država izdavača: " + ((Knjiga) publikacije[odabir]).getIzdavac().getDrzavaIzdavaca());
+		System.out.println("Naziv publikacije: " + odabrana.getNazivPublikacije());
+		System.out.println("Vrsta: " + odabrana.getVrstaPublikacije());
+		System.out.println("Broj stranica: " + odabrana.getBrojStranicaPublikacije());
+		System.out.println("Cijena: " + odabrana.getCijena());
+		if(odabrana instanceof Knjiga) {
+			System.out.println("Jezik: " + ((Knjiga) odabrana).getJezikKnjige());
+			System.out.println("Izdavač:" + ((Knjiga) odabrana).getIzdavac().getNazivIzdavaca());
+			System.out.println("Država izdavača: " + ((Knjiga) odabrana).getIzdavac().getDrzavaIzdavaca());
 			System.out.print("Raspoloživo za posudbu: ");
-			if( (((Knjiga) publikacije[odabir]).provjeriRaspolozivost()) == true) {
+			if( (((Knjiga) odabrana).provjeriRaspolozivost()) == true) {
 				System.out.println("DA");
 			} else {
 				System.out.println("NE");
 			}
 		} else {
-			System.out.println("Mjesec: " + (((Casopis) publikacije[odabir]).getMjesecIzdavanja()));
+			System.out.println("Mjesec: " + (((Casopis) odabrana).getMjesecIzdavanja()));
 		}
-		
 		System.out.println("Podaci korisnika: ");
 		System.out.println("Prezime: " + clan.getPrezime());
 		System.out.println("Ime: " + clan.getIme());
 		System.out.println("OIB: " + clan.getOibOsobe());
 		System.out.println("Datum posudbe: " + posudba.getLocalDateTime().format(DateTimeFormatter.ofPattern("dd.MM.yyyy. HH:mm:ss")));
+	
+		System.out.println("Pretražite publikacije:");
+		String naziv2 = ulaz.nextLine();
+		System.out.println("Pronađene publikacije:");
 		
+		List<Publikacija> pretraga = publikacija.stream().filter(p -> p.getNazivPublikacije().contains(naziv2)).collect(Collectors.toList());
+		for(Publikacija trazi : pretraga) {
+			System.out.println("Naziv publikacije: " + trazi.getNazivPublikacije());
+			System.out.println("Vrsta: " + trazi.getVrstaPublikacije());
+			System.out.println("Broj stranica: " + trazi.getBrojStranicaPublikacije());
+			System.out.println("Cijena: " + trazi.getCijena());
+			if(trazi instanceof Knjiga) {
+				System.out.println("Jezik: " + ((Knjiga) trazi).getJezikKnjige());
+				System.out.println("Izdavač:" + ((Knjiga) trazi).getIzdavac().getNazivIzdavaca());
+				System.out.println("Država izdavača: " + ((Knjiga) trazi).getIzdavac().getDrzavaIzdavaca());
+				System.out.print("Raspoloživo za posudbu: ");
+				if( (((Knjiga) trazi).provjeriRaspolozivost()) == true) {
+					System.out.println("DA");
+				} else {
+					System.out.println("NE");
+				}
+			} else {
+				System.out.println("Mjesec: " + (((Casopis) trazi).getMjesecIzdavanja()));
+			}
+			System.out.println();
+		}
+	
 	}
 
 }
