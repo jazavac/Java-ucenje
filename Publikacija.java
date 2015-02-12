@@ -1,5 +1,7 @@
 package hr.tvz.java.vjezbe.entitet;
 
+import hr.tvz.java.vjezbe.enumeracija.VrstaPublikacije;
+
 import java.math.BigDecimal;
 
 public abstract class Publikacija implements ZaProdaju {
@@ -7,12 +9,10 @@ public abstract class Publikacija implements ZaProdaju {
 	private String nazivPublikacije;
 	private int godinaIzdanja;
 	private int brojStranicaPublikacije;
-	private String vrstaPublikacije;
+	private VrstaPublikacije vrstaPublikacije;
 	private BigDecimal cijena;
-	public static final String VRSTA_PUBLIKACIJE_ELEKTRONICKA = "VRSTA_PUBLIKACIJE_ELEKTRONICKA";
-	public static final String VRSTA_PUBLIKACIJE_PAPIRNATA = "VRSTA_PUBLIKACIJE_PAPIRNATA";
-	
-	public Publikacija(String nazivPublikacije, int godinaIzdanja, int brojStranicaPublikacije, String vrstaPublikacije, BigDecimal cijenaPoStranici) {
+		
+	public Publikacija(String nazivPublikacije, int godinaIzdanja, int brojStranicaPublikacije, VrstaPublikacije vrstaPublikacije, BigDecimal cijenaPoStranici) {
 		this.nazivPublikacije = nazivPublikacije;
 		this.godinaIzdanja = godinaIzdanja;
 		this.brojStranicaPublikacije = brojStranicaPublikacije;
@@ -32,7 +32,7 @@ public abstract class Publikacija implements ZaProdaju {
 		return brojStranicaPublikacije;
 	}
 	
-	public String getVrstaPublikacije() {
+	public VrstaPublikacije getVrstaPublikacije() {
 		return vrstaPublikacije;
 	}
 
